@@ -5,24 +5,20 @@ using System.Collections.Generic;
 
 public class EntryPoint : MonoBehaviour {
 
+    protected Game m_game;
+
 	// Use this for initialization
 	void Start () {
-
-        PriorityQueue<int> queue = new PriorityQueue<int>();
-        for (int i = 0; i < 50; i++)
-            queue.Push(Random.Range(1, 1000));
-
-        string str = "";
-        while (queue.Count > 0)
-            str += queue.Pop().ToString() + ",";
-        Debug.Log(str);
+        m_game = new Game();
+        m_game.Init();
     }
 	
 	// Update is called once per frame
 	void Update () {
 
-        // Process all the events.
-        EventProcessQueue.Instance.Update();
+        // Update the game object.
+        if (m_game != null)
+            m_game.Update();
 	}
 
     void OnClickTest() {
