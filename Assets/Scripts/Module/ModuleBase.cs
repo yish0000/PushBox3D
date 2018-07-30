@@ -13,7 +13,7 @@ public class ModuleBase
 
     public virtual bool Init()
     {
-        AddEventListener(EventModuleInited.EVENTTYPE, (EventDispatcher sender, Event evt) =>
+        AddEventListener(EventModuleInited.EVENTTYPE, (Event evt) =>
         {
             OnEventModuleInited();
         });

@@ -5,7 +5,20 @@ using System.Collections.Generic;
 
 public class EntryPoint : MonoBehaviour {
 
+    static EntryPoint s_instance;
+
+    public static EntryPoint Instance
+    {
+        get { return s_instance; }
+    }
+
     protected Game m_game;
+
+    void Awake()
+    {
+        s_instance = this;
+
+    }
 
 	// Use this for initialization
 	void Start () {
@@ -20,8 +33,4 @@ public class EntryPoint : MonoBehaviour {
         if (m_game != null)
             m_game.Update();
 	}
-
-    void OnClickTest() {
-
-    }
 }

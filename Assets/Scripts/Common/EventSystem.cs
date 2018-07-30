@@ -22,7 +22,7 @@ public class Event
     }
 }
 
-public delegate void EventListener(EventDispatcher sender, Event evt);
+public delegate void EventListener(Event evt);
 
 /**
  Event dispatcher.
@@ -116,7 +116,7 @@ public class EventDispatcher
             List<EventListener>.Enumerator it2 = list.GetEnumerator();
             while (it2.MoveNext())
             {
-                it2.Current(this, evt);
+                it2.Current(evt);
             }
         }
     }

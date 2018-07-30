@@ -95,6 +95,7 @@
     <Compile Include="Assets\Scripts\Common\EventSystem.cs" />
     <Compile Include="Assets\Scripts\Common\PriorityQueue.cs" />
     <Compile Include="Assets\Scripts\EntryPoint.cs" />
+    <Compile Include="Assets\Scripts\Event\EventSwitchGameState.cs" />
     <Compile Include="Assets\Scripts\Event\EventGameStart.cs" />
     <Compile Include="Assets\Scripts\Event\EventModuleInited.cs" />
     <Compile Include="Assets\Scripts\Game\Game.cs" />
@@ -103,8 +104,10 @@
     <Compile Include="Assets\Scripts\Game\Stage.cs" />
     <Compile Include="Assets\Scripts\Module\ModuleBase.cs" />
     <Compile Include="Assets\Scripts\Module\ModuleManager.cs" />
-    <Compile Include="Assets\Scripts\UI\PanelBase.cs" />
+    <Compile Include="Assets\Scripts\UI\UIPanelBase.cs" />
+    <Compile Include="Assets\Scripts\UI\UIMenuStart.cs" />
     <Compile Include="Assets\Scripts\UI\UIModule.cs" />
+    <Compile Include="Assets\Scripts\Utility\GameUtils.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
