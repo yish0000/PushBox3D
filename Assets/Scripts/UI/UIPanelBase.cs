@@ -56,11 +56,12 @@ public class UIPanelBase
             }
 
             m_Status = PanelStatus.READY;
-            m_panel.transform.SetParent(GetUIRoot().transform);
-            m_panel.transform.localPosition = Vector3.zero;
-            m_panel.transform.localRotation = Quaternion.identity;
-            m_panel.transform.localScale = Vector3.one;
-            m_panel.SetActive(m_bShow);
+
+			RectTransform rc = m_panel.transform as RectTransform;
+            rc.SetParent(GetUIRoot().transform);
+			rc.offsetMin = Vector2.zero;
+			rc.offsetMax = Vector2.zero;
+			m_panel.SetActive(m_bShow);
 
             OnCreate();
 

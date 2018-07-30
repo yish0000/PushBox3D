@@ -46,7 +46,22 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Common\EventSystem.cs" />
+     <Compile Include="Assets\Scripts\Common\PriorityQueue.cs" />
      <Compile Include="Assets\Scripts\EntryPoint.cs" />
+     <Compile Include="Assets\Scripts\Event\EventGameStart.cs" />
+     <Compile Include="Assets\Scripts\Event\EventModuleInited.cs" />
+     <Compile Include="Assets\Scripts\Event\EventSwitchGameState.cs" />
+     <Compile Include="Assets\Scripts\Game\Game.cs" />
+     <Compile Include="Assets\Scripts\Game\HostPlayer.cs" />
+     <Compile Include="Assets\Scripts\Game\MainCamera.cs" />
+     <Compile Include="Assets\Scripts\Game\Stage.cs" />
+     <Compile Include="Assets\Scripts\Module\ModuleBase.cs" />
+     <Compile Include="Assets\Scripts\Module\ModuleManager.cs" />
+     <Compile Include="Assets\Scripts\UI\UIMenuStart.cs" />
+     <Compile Include="Assets\Scripts\UI\UIModule.cs" />
+     <Compile Include="Assets\Scripts\UI\UIPanelBase.cs" />
+     <Compile Include="Assets\Scripts\Utility\GameUtils.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
