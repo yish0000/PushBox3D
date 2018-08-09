@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-class Stage
+public class Stage
 {
+
 }
