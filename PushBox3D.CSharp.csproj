@@ -103,6 +103,7 @@
     <Compile Include="Assets\Scripts\Game\MainCamera.cs" />
     <Compile Include="Assets\Scripts\Game\Stage.cs" />
     <Compile Include="Assets\Scripts\Game\StageData.cs" />
+    <Compile Include="Assets\Scripts\Game\StageUtil.cs" />
     <Compile Include="Assets\Scripts\Module\ModuleBase.cs" />
     <Compile Include="Assets\Scripts\Module\ModuleManager.cs" />
     <Compile Include="Assets\Scripts\UI\UIMenuStart.cs" />

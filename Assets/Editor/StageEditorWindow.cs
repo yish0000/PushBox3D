@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+[ExecuteInEditMode]
 public class StageEditorWindow : EditorWindow
 {
     StageEditor targetObject = new StageEditor();
@@ -53,14 +54,28 @@ public class StageEditorWindow : EditorWindow
     {
         UnityEngine.Event evt = UnityEngine.Event.current;
 
-        if (targetObject.CurrentSelType != StageEditor.ElementType.None)
+        if (targetObject.CurrentSelType != StageData.StageElement.None)
         {
             if (evt.type == EventType.layout)
                 HandleUtility.AddDefaultControl(GUIUtility.GetControlID(GetHashCode(), FocusType.Passive));
 
+            if (targetObject.Drawer != null)
+            {
+                int x, z;
+                bool isHit = targetObject.GetCurrentGrid(evt, out x, out z);
+                if (isHit)
+                {
+                    targetObject.Drawer.SetBrushCenter(x, z);
+                    if (evt.isMouse && evt.button == 0 && (evt.type == EventType.mouseDown || evt.type == EventType.mouseDrag))
+                        targetObject.Drawer.PaintAt(x, z);
 
+                    SceneView.RepaintAll();
+                }
+            }
         }
     }
+
+
 
     void OnBtnCreateNew()
     {
@@ -90,7 +105,7 @@ public class StageEditorWindow : EditorWindow
                 int n = i * 2 + j;
                 bool isActive = (int)targetObject.CurrentSelType == n;
                 if (GUILayout.Toggle(isActive, StageEditor.ELEMENT_TYPES[n], j == 0 ? "ButtonLeft" : "ButtonRight") != isActive)
-                    targetObject.CurrentSelType = (StageEditor.ElementType)n;
+                    targetObject.CurrentSelType = (StageData.StageElement)n;
             }
             GUILayout.EndHorizontal();
         }

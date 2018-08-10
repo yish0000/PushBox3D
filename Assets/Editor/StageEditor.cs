@@ -4,32 +4,37 @@ using System.Collections;
 
 public class StageEditor
 {
-    public enum ElementType
-    {
-        None,
-        Floor,
-        Wall,
-        BornPoint,
-        Box,
-        Target,
-    };
-
     public static string[] ELEMENT_TYPES = new string[] { "None", "Floor", "Wall", "BornPoint", "Box", "Target" };
 
-    ElementType mCurrentSelType = ElementType.None;
+    StageData.StageElement mCurrentSelType = StageData.StageElement.None;
     string mStageFile;
     int mStageMapSize;
+    GameObject mStageRoot;
     GameObject mNewWorldPlane;
+    StageData mData;
+    StageDrawer mDrawer;
+
+    [MenuItem("Tools/StageEditor")]
+    public static void OpenStageEditor()
+    {
+        StageEditorWindow window = (StageEditorWindow)EditorWindow.GetWindow<StageEditorWindow>();
+        window.minSize = new Vector2(700, 450);
+        window.titleContent = new GUIContent("PushBox Stage Editor");
+        window.Show();
+    }
 
     public StageEditor()
     {
         mStageMapSize = 20;
     }
 
-    public ElementType CurrentSelType
+    public StageData.StageElement CurrentSelType
     {
         get { return mCurrentSelType; }
-        set { mCurrentSelType = value; }
+        set {
+            mCurrentSelType = value;
+            mDrawer.PaintType = value;
+        }
     }
 
     public string StageFile
@@ -46,34 +51,48 @@ public class StageEditor
             mStageMapSize = value;
 
             if (mNewWorldPlane != null)
+            {
                 mNewWorldPlane.transform.localScale = new Vector3(mStageMapSize * 0.1f, 1f, mStageMapSize * 0.1f);
+                mNewWorldPlane.transform.localPosition = new Vector3(mStageMapSize * 0.5f, 0.001f, mStageMapSize * 0.5f);
+            }
         }
+    }
+
+    public StageDrawer Drawer
+    {
+        get { return mDrawer; }
     }
 
     void CreateWorldPlane()
     {
-        mNewWorldPlane = GameObject.Find("NewWorldPlane");
-        if (mNewWorldPlane == null)
-        {
-            UnityEngine.Object asset = GameUtils.LoadResource("Models/prefabs/NewWorldPlane");
-            if (asset != null)
-                mNewWorldPlane = UnityEngine.Object.Instantiate(asset) as GameObject;
-        }
+        GameObject world = GameObject.Find("World");
+        if (world == null)
+            return;
 
+        mStageRoot = GameObject.Find("World/Stage");
+        if (mStageRoot != null)
+            GameObject.DestroyImmediate(mStageRoot);
+        mStageRoot = new GameObject("Stage");
+        mStageRoot.transform.SetParent(world.transform);
+
+        UnityEngine.Object asset = GameUtils.LoadResource("Models/prefabs/NewWorldPlane");
+        if (asset != null)
+            mNewWorldPlane = UnityEngine.Object.Instantiate(asset) as GameObject;
         if (mNewWorldPlane != null)
         {
-            GameObject world = GameObject.Find("World");
-            if (world != null)
-                mNewWorldPlane.transform.SetParent(world.transform);
+            mNewWorldPlane.transform.SetParent(mStageRoot.transform);
             mNewWorldPlane.name = "NewWorldPlane";
             mNewWorldPlane.transform.localScale = new Vector3(mStageMapSize * 0.1f, 1f, mStageMapSize * 0.1f);
-            mNewWorldPlane.transform.localPosition = new Vector3(0f, 0.001f, 0f);
+            mNewWorldPlane.transform.localPosition = new Vector3(mStageMapSize * 0.5f, 0.001f, mStageMapSize * 0.5f);
         }
     }
 
     public void CreateNew()
     {
         CreateWorldPlane();
+
+        mData = new StageData();
+        mDrawer = new StageDrawer(mData);
     }
 
     public bool LoadXML(string filename)
@@ -96,12 +115,54 @@ public class StageEditor
     { 
     }
 
-    [MenuItem("Tools/StageEditor")]
-    public static void OpenStageEditor()
+    public bool GetCurrentGrid(UnityEngine.Event evt, out int x, out int z)
     {
-        StageEditorWindow window = (StageEditorWindow)EditorWindow.GetWindow<StageEditorWindow>();
-        window.minSize = new Vector2(700, 450);
-        window.titleContent = new GUIContent("PushBox Stage Editor");
-        window.Show();
+        x = 0;
+        z = 0;
+        Vector3 hitPoint;
+        bool isHit = MousePositionInWorld(evt, out hitPoint);
+        if (isHit)
+        {
+            Vector3 localPos = mNewWorldPlane.transform.InverseTransformPoint(hitPoint);
+            x = Mathf.FloorToInt(localPos.x);
+            z = Mathf.FloorToInt(localPos.z);
+            if (!IsInMapGrid(x, z))
+                isHit = false;
+        }
+
+        return true;
+    }
+
+    bool IsInMapGrid(int x, int z)
+    {
+        if (mData == null) return false;
+        if (x < 0 || x >= mStageMapSize) return false;
+        if (z < 0 || z >= mStageMapSize) return false;
+        return true;
+    }
+
+    bool MousePositionInWorld(UnityEngine.Event current, out Vector3 hitPoint)
+    {
+        Vector3 pos = new Vector3(current.mousePosition.x, current.mousePosition.y, 0);
+        Ray ray = Camera.current.ScreenPointToRay(pos);
+        ray = HandleUtility.GUIPointToWorldRay(pos);
+        RaycastHit hit = new RaycastHit();
+
+        bool isHit = Raycast(ray, out hit);
+        hitPoint = hit.point;
+        return isHit;
+    }
+
+    bool Raycast(Ray ray, out RaycastHit hit)
+    {
+        MeshCollider cld = mNewWorldPlane.GetComponent<MeshCollider>();
+        if (cld)
+        {
+            if (cld.Raycast(ray, out hit, float.PositiveInfinity))
+                return true;
+        }
+
+        hit = new RaycastHit();
+        return false;
     }
 }

@@ -8,11 +8,14 @@ public class StageData
 
     public enum StageElement
     {
+        None,
         Floor,
         Wall,
         BornPoint,
         Box,
         Target,
+
+        Num,
     };
 
     [System.Serializable]
