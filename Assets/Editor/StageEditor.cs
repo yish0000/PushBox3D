@@ -4,11 +4,20 @@ using System.Collections;
 
 public class StageEditor
 {
-    public static string[] ELEMENT_TYPES = new string[] { "None", "Floor", "Wall", "BornPoint", "Box", "Target" };
-
-    StageData.StageElement mCurrentSelType = StageData.StageElement.None;
-    string mStageFile;
-    int mStageMapSize;
+    public enum StagePaintType
+    {
+        Select = -1,
+        None,
+        Floor,
+        Wall,
+        Box,
+        BornPoint,
+        Target,
+    }
+    
+    StagePaintType mCurrentSelType = StagePaintType.Select;
+    string mStageFile = "";
+    int mStageMapSize = 20;
     GameObject mStageRoot;
     GameObject mNewWorldPlane;
     StageData mData;
@@ -23,17 +32,26 @@ public class StageEditor
         window.Show();
     }
 
-    public StageEditor()
+    StageData.StageElement PaintType2ElementType(StagePaintType pt)
     {
-        mStageMapSize = 20;
+        switch (pt)
+        {
+            case StagePaintType.None: return StageData.StageElement.None;
+            case StagePaintType.Floor: return StageData.StageElement.Floor;
+            case StagePaintType.Wall: return StageData.StageElement.Wall;
+            case StagePaintType.Box: return StageData.StageElement.Box;
+            case StagePaintType.BornPoint: return StageData.StageElement.BornPoint;
+            case StagePaintType.Target: return StageData.StageElement.Target;
+            default: return StageData.StageElement.None;
+        }
     }
 
-    public StageData.StageElement CurrentSelType
+    public StagePaintType CurrentSelType
     {
         get { return mCurrentSelType; }
         set {
             mCurrentSelType = value;
-            mDrawer.PaintType = value;
+            mDrawer.PaintType = PaintType2ElementType(value);
         }
     }
 
@@ -63,17 +81,19 @@ public class StageEditor
         get { return mDrawer; }
     }
 
+    public void Init()
+    {
+        mData = new StageData(mStageMapSize, mStageMapSize);
+        mDrawer = new StageDrawer(mData);
+
+        CreateWorldPlane();
+    }
+
     void CreateWorldPlane()
     {
-        GameObject world = GameObject.Find("World");
-        if (world == null)
-            return;
-
         mStageRoot = GameObject.Find("World/Stage");
-        if (mStageRoot != null)
-            GameObject.DestroyImmediate(mStageRoot);
-        mStageRoot = new GameObject("Stage");
-        mStageRoot.transform.SetParent(world.transform);
+        if (mStageRoot == null)
+            return;
 
         UnityEngine.Object asset = GameUtils.LoadResource("Models/prefabs/NewWorldPlane");
         if (asset != null)
@@ -89,30 +109,34 @@ public class StageEditor
 
     public void CreateNew()
     {
-        CreateWorldPlane();
-
-        mData = new StageData();
-        mDrawer = new StageDrawer(mData);
+        mStageFile = "";
+        mData.ClearAll();
+        mDrawer.RepaintStageWorld();
     }
 
     public bool LoadXML(string filename)
     {
-        CreateWorldPlane();
+        if (!mData.LoadXML(filename))
+            return false;
+
+        mStageFile = filename;
+        mDrawer.RepaintStageWorld();
         return true;
     }
 
     public void SaveXML(string filename)
-    { 
+    {
+        mData.SaveXML(filename);
+        mStageFile = filename;
     }
 
     public bool Load(string filename)
     {
-        CreateWorldPlane();
         return true;
     }
 
     public void Save(string filename)
-    { 
+    {
     }
 
     public bool GetCurrentGrid(UnityEngine.Event evt, out int x, out int z)
@@ -123,14 +147,13 @@ public class StageEditor
         bool isHit = MousePositionInWorld(evt, out hitPoint);
         if (isHit)
         {
-            Vector3 localPos = mNewWorldPlane.transform.InverseTransformPoint(hitPoint);
-            x = Mathf.FloorToInt(localPos.x);
-            z = Mathf.FloorToInt(localPos.z);
+            x = Mathf.FloorToInt(hitPoint.x);
+            z = Mathf.FloorToInt(hitPoint.z);
             if (!IsInMapGrid(x, z))
                 isHit = false;
         }
 
-        return true;
+        return isHit;
     }
 
     bool IsInMapGrid(int x, int z)

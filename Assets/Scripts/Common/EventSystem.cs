@@ -37,7 +37,7 @@ public class EventDispatcher
         }
     }
 
-    Dictionary<string, SortedDictionary<int, List<EventListener>>> m_EventMap = new Dictionary<string,SortedDictionary<int,List<EventListener>>>();
+    Dictionary<string, SortedDictionary<int, List<EventListener>>> m_EventMap = new Dictionary<string, SortedDictionary<int, List<EventListener>>>();
 
     public void AddEventListener(string eventType, EventListener listener, int priority = 0)
     {

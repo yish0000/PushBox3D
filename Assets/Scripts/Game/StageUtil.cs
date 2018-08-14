@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class StageUtil
 {
+    public static StageData.StageElement[] ELEMENT_TYPE_ENUMS = new StageData.StageElement[] {
+        StageData.StageElement.None, StageData.StageElement.Floor, StageData.StageElement.Wall,
+        StageData.StageElement.BornPoint, StageData.StageElement.Box, StageData.StageElement.Target,
+    };
+
     static string[] element_asset_path = new string[] {
         "",
         "Models/prefabs/Floor",
@@ -13,9 +18,20 @@ public class StageUtil
         ""
     };
 
+    public static int GetPaintTypeIndex(StageData.StageElement ele)
+    {
+        for (int i = 0; i < ELEMENT_TYPE_ENUMS.Length; i++)
+        {
+            if (ELEMENT_TYPE_ENUMS[i] == ele)
+                return i;
+        }
+
+        return -1;
+    }
+
     public static UnityEngine.Object GetElementAsset(StageData.StageElement ele)
     {
-        string path = element_asset_path[(int)ele];
+        string path = element_asset_path[GetPaintTypeIndex(ele)];
         if (path == null || path.Length == 0)
             return null;
         return GameUtils.LoadResource(path);
@@ -32,7 +48,7 @@ public class StageUtil
 
     public static Vector3 GetElementOffset(StageData.StageElement ele)
     {
-        int index = (int)ele;
+        int index = GetPaintTypeIndex(ele);
         if (index >= 0 && index < element_asset_pos_offset.Length)
             return element_asset_pos_offset[index];
         return Vector3.zero;

@@ -37,7 +37,7 @@ public class UIPanelBase
 
     public bool CreatePanel()
     {
-        if (m_panel)
+        if (m_panel != null)
             return true;
 
         Action<UnityEngine.Object> onLoaded = (UnityEngine.Object asset) =>
@@ -133,8 +133,7 @@ public class UIPanelBase
 
     protected void RegisterButtonEvent(string buttonPath, UnityAction cb)
     {
-        GameObject btnObj = m_panel.transform.Find("Widget/Btn_Test").gameObject;
-
+        GameObject btnObj = m_panel.transform.Find(buttonPath).gameObject;
         Button.ButtonClickedEvent evt = new Button.ButtonClickedEvent();
         evt.AddListener(cb);
         Button btn = btnObj.GetComponent<Button>();
